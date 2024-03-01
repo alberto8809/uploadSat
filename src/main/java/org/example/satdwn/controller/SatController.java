@@ -33,6 +33,7 @@ public class SatController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HttpStatus> sat(@RequestBody SatClass userSat) throws IOException {
+        LOGGER.info("inside sat " + userSat);
         satService.requestSat(userSat);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -42,6 +43,7 @@ public class SatController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HttpStatus> upload(@RequestBody String fileName) {
+          LOGGER.info("inside upload " + fileName);
         UploadFileToS3.upload(fileName);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
