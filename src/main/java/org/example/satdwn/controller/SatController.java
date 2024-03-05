@@ -52,7 +52,7 @@ public class SatController {
     @GetMapping(value = "getFiles/{fileName}")
     public ResponseEntity<Map<String, List<Response>>> getFile(@PathVariable(name = "fileName") String fileName) {
         Map<String, List<Response>> responses = satService.getFiles(fileName);
-        if (responses.size() != 0) {
+        if (!responses.isEmpty())) {
             return new ResponseEntity<>(responses, HttpStatus.ACCEPTED);
         }
 
