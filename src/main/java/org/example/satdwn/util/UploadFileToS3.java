@@ -91,8 +91,8 @@ public class UploadFileToS3 {
                 localPath = path;
             }
 
-            facturas.put("Emitiidas", responses);
-            facturas.put("Recibididas", responses);
+            facturas.put("Emitidas", responses);
+            facturas.put("Recibidas", responses);
 
             FileUtils.deleteDirectory(new File(localPath.substring(0, 4)));
 
