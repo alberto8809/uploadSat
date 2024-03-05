@@ -13,6 +13,8 @@ public class SatClass {
 
     private String finalDate;
 
+    private String token;
+
     public SatClass() {
     }
 
@@ -64,6 +66,14 @@ public class SatClass {
         this.finalDate = finalDate;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Override
     public String toString() {
         return "SatClass{" +
@@ -73,6 +83,7 @@ public class SatClass {
                 ", clave='" + clave + '\'' +
                 ", initialDate='" + initialDate + '\'' +
                 ", finalDate='" + finalDate + '\'' +
+                ", token='" + token + '\'' +
                 '}';
     }
 }
