@@ -20,10 +20,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.nio.file.Paths;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class UploadFileToS3 {
@@ -50,10 +47,11 @@ public class UploadFileToS3 {
 
     }
 
-    public static List<Response> getFilelFromAWS(String user_id) {
+    public static Map<String, List<Response>> getFilelFromAWS(String user_id) {
         List<Response> responses = new ArrayList<>();
         List<String> urls = new ArrayList<>();
         List<String> paths = new ArrayList<>();
+        Map<String, List<Response>> facturas = new HashMap<>();
         int expirationTime = 3600;
         try {
 
@@ -92,13 +90,17 @@ public class UploadFileToS3 {
                 responses.add(response);
                 localPath = path;
             }
+
+            facturas.put("Emitiidas", responses);
+            facturas.put("Recibididas", responses);
+
             FileUtils.deleteDirectory(new File(localPath.substring(0, 4)));
 
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return responses;
+        return facturas;
     }
 
     public static String createFile(String fileName) {

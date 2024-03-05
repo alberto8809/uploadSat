@@ -18,6 +18,7 @@ import java.net.URLConnection;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -28,7 +29,7 @@ public class SatService {
     SatRepository repository;
     Logger LOGGER = LogManager.getLogger(SatService.class);
 
-    public List<Response> getFiles(String fileName) {
+    public Map<String, List<Response>> getFiles(String fileName) {
         return UploadFileToS3.getFilelFromAWS(fileName);
     }
 

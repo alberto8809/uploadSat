@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -49,10 +50,10 @@ public class SatController {
 
 
     @GetMapping(value = "getFiles/{fileName}")
-    public ResponseEntity<List<Response>> getFile(@PathVariable(name = "fileName") String fileName) {
-        List<Response> responses = satService.getFiles(fileName);
+    public ResponseEntity<Map<String, List<Response>>> getFile(@PathVariable(name = "fileName") String fileName) {
+        Map<String, List<Response>> responses = satService.getFiles(fileName);
         if (responses.size() != 0) {
-            return new ResponseEntity<>(responses, HttpStatus.OK);
+            return new ResponseEntity<>(responses, HttpStatus.ACCEPTED);
         }
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
