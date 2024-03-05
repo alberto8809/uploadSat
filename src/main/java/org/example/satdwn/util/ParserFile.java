@@ -21,7 +21,7 @@ public class ParserFile {
     public ParserFile() {
     }
 
-    public static Response getParseValues(String path) {
+    public static Response getParseValues(String localPath) {
 
         Response response = new Response();
         Descripcion descripcion = new Descripcion();
@@ -29,7 +29,7 @@ public class ParserFile {
         try {
 
             //LOGGER.info("path from AWS:  { " + path + " }");
-            File archivoXML = new File(path);
+            File archivoXML = new File(localPath);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(archivoXML);
