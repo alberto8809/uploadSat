@@ -52,7 +52,7 @@ public class SatController {
     public ResponseEntity<List<Response>> getFile(@PathVariable(name = "fileName") String fileName) {
         List<Response> responses = satService.getFiles(fileName);
         if (responses.size() != 0) {
-            return new ResponseEntity<>(responses, HttpStatus.FOUND);
+            return new ResponseEntity<>(responses, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
