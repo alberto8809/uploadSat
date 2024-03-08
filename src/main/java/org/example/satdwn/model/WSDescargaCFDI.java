@@ -1,8 +1,51 @@
 package org.example.satdwn.model;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.TimeZone;
+import java.util.UUID;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
 import org.apache.commons.ssl.PKCS8Key;
@@ -14,26 +57,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import java.io.*;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.*;
-import java.security.cert.*;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheFactory;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -42,6 +68,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class WSDescargaCFDI {
+
     private static final Logger logger = LogManager.getLogger(WSDescargaCFDI.class);
 
     private static final String URL_TIME_SERVER = "1.mx.pool.ntp.org";
@@ -59,7 +86,7 @@ public class WSDescargaCFDI {
     private static final String WS_SOAP_ACTION_VERIFICACION = "http://DescargaMasivaTerceros.sat.gob.mx/IVerificaSolicitudDescargaService/VerificaSolicitudDescarga";
     private static final String WS_SOAP_ACTION_DESCARGA = "http://DescargaMasivaTerceros.sat.gob.mx/IDescargaMasivaTercerosService/Descargar";
 
-    private static String DIR_SALIDA = "/home/ubuntu/uploadFile/";
+    private static String DIR_SALIDA = "/home/ubuntu/satUploadFile/";
     private String RFC_SOLICITANTE = "XAXX010101000 ";
 
     public static final MediaType MT_JSON = MediaType.get("text/xml; charset=utf-8");
@@ -365,7 +392,6 @@ public class WSDescargaCFDI {
                         return this.IdSolicitud;
 
                     }
-
                 }
             } else {
                 this.IdSolicitud = "abc3456789";
@@ -494,9 +520,9 @@ public class WSDescargaCFDI {
                                 XPathConstants.STRING);
 
                         ResultadoVerificaSolicitud resultadoVerificacion = new ResultadoVerificaSolicitud(
-                                codigo_estado_solicitud, estado_solicitud, no_cfdis,xml_salida.toFile().getName());
+                                codigo_estado_solicitud, estado_solicitud, no_cfdis, xml_salida.toFile().getName());
 
-                        logger.debug("CodigoEstadoSolicitud {} '{}' EstadoSolicitud {} '{}' no_cfdis/XML´s {}",
+                        logger.debug("CodigoEstadoSolicitud {} '{}' EstadoSolicitud {} '{}' no_cfdis {}",
                                 codigo_estado_solicitud, resultadoVerificacion.getCodigoEstadoSolicitudMensaje(),
                                 estado_solicitud, resultadoVerificacion.getEstadoSolicitudMensaje(), no_cfdis);
 
@@ -507,7 +533,6 @@ public class WSDescargaCFDI {
                 }
             } else {
                 this.IdSolicitud = "abc987654321";
-                logger.debug(" {} ----- {} ");
                 return new ResultadoVerificaSolicitud(null, null, null, null);
             }
 
@@ -786,7 +811,7 @@ public class WSDescargaCFDI {
         try {
 
             ArrayList<String> paquetes = new ArrayList<String>();
-            InputStream is = new FileInputStream(DIR_SALIDA+xml_verificacion.toFile());
+            InputStream is = new FileInputStream(xml_verificacion.toFile());
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -811,7 +836,6 @@ public class WSDescargaCFDI {
                     paquetes.add(n.getTextContent());
                 }
 
-
                 return paquetes;
             }
 
@@ -835,8 +859,7 @@ public class WSDescargaCFDI {
 
         try {
 
-            InputStream is = new FileInputStream(DIR_SALIDA+xml_verificacion.toFile());
-
+            InputStream is = new FileInputStream(xml_verificacion.toFile());
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -944,4 +967,5 @@ public class WSDescargaCFDI {
         }
 
     }
+
 }

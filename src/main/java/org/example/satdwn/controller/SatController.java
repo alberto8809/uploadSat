@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -34,9 +35,11 @@ public class SatController {
     @PostMapping(value = "sat",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HttpStatus> sat(@RequestBody SatClass userSat) throws IOException {
-        satService.requestSat(userSat);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<HttpStatus> sat(@RequestBody SatClass userSat) throws ParseException, IOException {
+        if (satService.requestSat(userSat)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
 
@@ -45,7 +48,7 @@ public class SatController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HttpStatus> upload(@RequestBody String fileName) {
         UploadFileToS3.upload(fileName);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
@@ -55,7 +58,6 @@ public class SatController {
         if (!responses.isEmpty()) {
             return new ResponseEntity<>(responses, HttpStatus.OK);
         }
-
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

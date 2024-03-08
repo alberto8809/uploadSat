@@ -25,6 +25,7 @@ import java.util.*;
 
 public class UploadFileToS3 {
     private static String bucketName = "xmlfilesback";
+    private static String bucketNameKeys = "e-tribute-client-files";
     private static String path = "https://xmlfilesback.s3.amazonaws.com/";
     public static Logger LOGGER = LogManager.getLogger(UploadFileToS3.class);
 
@@ -128,4 +129,33 @@ public class UploadFileToS3 {
         }
         return localFilePath;
     }
+
+
+
+    public static String createFileKeys(String fileName) {
+        String localFilePath = null;
+        try {
+            //debe ser 8 por el rfc
+            File directorio = new File(fileName.substring(0, 4));
+            if (!directorio.exists()) {
+                directorio.mkdirs();
+            }
+
+            S3Client s3 = S3Client.builder().region(Region.US_EAST_1).build();
+            localFilePath = directorio + "/" + fileName;
+            //LOGGER.info("Local path  " + localFilePath);
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketNameKeys)
+                    .key(fileName)
+                    .build();
+
+            GetObjectResponse getObjectResponse = s3.getObject(getObjectRequest, Paths.get(localFilePath));
+
+            //LOGGER.info(" --- " + Paths.get(localFilePath));
+        } catch (S3Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+        return localFilePath;
+    }
+
 }

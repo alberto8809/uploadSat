@@ -1,21 +1,26 @@
 package org.example.satdwn.service;
 
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.satdwn.model.Response;
 import org.example.satdwn.model.SatClass;
-import org.example.satdwn.model.User;
 import org.example.satdwn.model.WSDescargaCFDI;
 import org.example.satdwn.repository.SatRepository;
-import org.example.satdwn.util.EncryptionUtil;
 import org.example.satdwn.util.UploadFileToS3;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,43 +39,43 @@ public class SatService {
     }
 
 
-    public SatClass requestSat(SatClass satClass) throws IOException {
-        LOGGER.info("User values { " + satClass + "}");
+    public boolean requestSat(SatClass satClass) throws ParseException, IOException {
+        boolean flag = false;
 
-        if (repository.getUserByMail(satClass.getToken()) != null) {
+        if (repository.getUserByToken(satClass.getToken()) != null) {
 
-            // genearte for CER
+            Path destinoCer = Paths.get("/home/ubuntu/satUploadFile/user.cer");
             URL url = new URL(satClass.getCer_path());
-            URLConnection connection = url.openConnection();
-            connection.connect();
-            connection.getContent();
+            Files.copy(url.openStream(), destinoCer, StandardCopyOption.REPLACE_EXISTING);
 
-            // genearte for KEY
+            Path destinoKey = Paths.get("/home/ubuntu/satUploadFile/user.key");
             URL url2 = new URL(satClass.getKey_path());
-            URLConnection connection2 = url2.openConnection();
-            connection2.connect();
-            connection2.getContent();
+            Files.copy(url2.openStream(), destinoKey, StandardCopyOption.REPLACE_EXISTING);
 
 
-            WSDescargaCFDI solicitud = new WSDescargaCFDI(satClass.getRfc(), connection.getInputStream(), connection2.getInputStream(), satClass.getClave());
+            InputStream cer = new FileInputStream(new File(String.valueOf(destinoCer)));
+            InputStream key = new FileInputStream(new File(String.valueOf(destinoKey)));
 
+
+            WSDescargaCFDI solicitud = new WSDescargaCFDI(satClass.getRfc(), cer, key, satClass.getClave());
             solicitud.autenticacion();
-            String idSolicitud = solicitud.solicitud(satClass.getInitialDate(), satClass.getFinalDate(), null, satClass.getRfc(), WSDescargaCFDI.TIPO_SOLICITUD_CFDI);
+            String idSolicitud = solicitud.solicitud(satClass.getInitialDate(), satClass.getFinalDate(), null, satClass.getRfc(),
+                    WSDescargaCFDI.TIPO_SOLICITUD_CFDI);
             WSDescargaCFDI.ResultadoVerificaSolicitud resultado = solicitud.verificacion(idSolicitud);
-            if (resultado != null) {
-                ArrayList<String> idPaquetes = solicitud.obtiener_ids_paquetes(Paths.get(resultado.getXml_resultado()));
-                if (idPaquetes != null) {
-                    for (String idPaquete : idPaquetes) {
-                        String xml = solicitud.descargaPaquete(idPaquete);
-                        String zip = solicitud.extraer_zip_de_xml(Paths.get(xml));
-                        //UploadFileToS3.upload(zip);
-                        //System.out.println(zip);
-                    }
+            ArrayList<String> idPaquetes = solicitud.obtiener_ids_paquetes(Paths.get(resultado.getXml_resultado()));
+            if (!idPaquetes.isEmpty() && !idPaquetes.equals(null)) {
+                for (String idPaquete : idPaquetes) {
+                    String xml = solicitud.descargaPaquete(idPaquete);
+                    String zip = solicitud.extraer_zip_de_xml(Paths.get(xml));
+                    LOGGER.info("file name: { " + zip + "}");
+                    return true;
                 }
             }
 
+
         }
-        return satClass;
+
+        return flag;
     }
 
 }
