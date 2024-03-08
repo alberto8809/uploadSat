@@ -27,7 +27,7 @@ public class SatController {
     @Autowired
     private SatService satService;
 
-    Logger LOGGER = LogManager.getLogger(SatController.class);
+    //Logger LOGGER = LogManager.getLogger(SatController.class);
 
     public SatController() {
     }
