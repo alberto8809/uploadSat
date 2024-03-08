@@ -44,11 +44,15 @@ public class SatService {
 
         if (repository.getUserByToken(satClass.getToken()) != null) {
 
-            Path destinoCer = Paths.get("/home/ubuntu/satUploadFile/user.cer");
+            Path destinoCer = Paths.get("/Users/marioalberto/IdeaProjects/upload/user.cer");
+            //Path destinoCer = Paths.get("/home/ubuntu/satUploadFile/user.cer");
+
+
             URL url = new URL(satClass.getCer_path());
             Files.copy(url.openStream(), destinoCer, StandardCopyOption.REPLACE_EXISTING);
 
-            Path destinoKey = Paths.get("/home/ubuntu/satUploadFile/user.key");
+            Path destinoKey = Paths.get("/Users/marioalberto/IdeaProjects/upload/user.key");
+            //Path destinoKey = Paths.get("/home/ubuntu/satUploadFile/user.key");
             URL url2 = new URL(satClass.getKey_path());
             Files.copy(url2.openStream(), destinoKey, StandardCopyOption.REPLACE_EXISTING);
 
@@ -59,20 +63,29 @@ public class SatService {
 
             WSDescargaCFDI solicitud = new WSDescargaCFDI(satClass.getRfc(), cer, key, satClass.getClave());
             solicitud.autenticacion();
+            //LOGGER.info("ToString ---> { " + solicitud.toString() + " }");
             String idSolicitud = solicitud.solicitud(satClass.getInitialDate(), satClass.getFinalDate(), null, satClass.getRfc(),
                     WSDescargaCFDI.TIPO_SOLICITUD_CFDI);
+            LOGGER.info("id solicitud --->  { " + idSolicitud + " }");
             WSDescargaCFDI.ResultadoVerificaSolicitud resultado = solicitud.verificacion(idSolicitud);
-            ArrayList<String> idPaquetes = solicitud.obtiener_ids_paquetes(Paths.get(resultado.getXml_resultado()));
-            if (!idPaquetes.isEmpty() && !idPaquetes.equals(null)) {
-                for (String idPaquete : idPaquetes) {
-                    String xml = solicitud.descargaPaquete(idPaquete);
-                    String zip = solicitud.extraer_zip_de_xml(Paths.get(xml));
-                    LOGGER.info("file name: { " + zip + "}");
-                    return true;
+
+            if (resultado != null) {
+                ArrayList<String> idPaquetes = solicitud.obtiener_ids_paquetes(Paths.get(resultado.getXml_resultado()));
+
+                if (idPaquetes != null) {
+                    for (String idPaquete : idPaquetes) {
+                        String xml = solicitud.descargaPaquete(idPaquete);
+                        String zip = solicitud.extraer_zip_de_xml(Paths.get(xml));
+                        UploadFileToS3.upload(satClass.getRfc(),xml);
+                        LOGGER.info("file name: { " + zip + "}");
+                        return true;
+                    }
+                } else {
+                    return flag;
                 }
+            } else {
+                return false;
             }
-
-
         }
 
         return flag;

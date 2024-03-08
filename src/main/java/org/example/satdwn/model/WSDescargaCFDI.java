@@ -51,6 +51,7 @@ import org.apache.commons.net.ntp.TimeInfo;
 import org.apache.commons.ssl.PKCS8Key;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.example.satdwn.util.UploadFileToS3;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -86,7 +87,10 @@ public class WSDescargaCFDI {
     private static final String WS_SOAP_ACTION_VERIFICACION = "http://DescargaMasivaTerceros.sat.gob.mx/IVerificaSolicitudDescargaService/VerificaSolicitudDescarga";
     private static final String WS_SOAP_ACTION_DESCARGA = "http://DescargaMasivaTerceros.sat.gob.mx/IDescargaMasivaTercerosService/Descargar";
 
-    private static String DIR_SALIDA = "/home/ubuntu/satUploadFile/";
+
+
+    private static String DIR_SALIDA = "/Users/marioalberto/IdeaProjects/upload/";
+    //private static String DIR_SALIDA = "/home/ubuntu/satUploadFile/";
     private String RFC_SOLICITANTE = "XAXX010101000 ";
 
     public static final MediaType MT_JSON = MediaType.get("text/xml; charset=utf-8");
@@ -617,6 +621,8 @@ public class WSDescargaCFDI {
                 Path guarda_solicitud = Paths.get(DIR_SALIDA, file_name_salida);
 
                 FileWriter fw = new FileWriter(guarda_solicitud.toFile());
+                logger.info("xml " + fw);
+
                 mustache.execute(fw, scopes).flush();
                 logger.debug("Solicitud guardada {}", guarda_solicitud);
             }
@@ -650,8 +656,8 @@ public class WSDescargaCFDI {
                         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
                         String validacion_file = "p_" + idPaquete + "_" + format.format(new Date()) + ".xml";
                         Path xml_salida = Paths.get(DIR_SALIDA, validacion_file);
+/**/
 
-                        Files.write(xml_salida, resultado.get("resultado").getBytes());
                         logger.debug("XML generado en {}", xml_salida.toUri());
                         return xml_salida.toFile().getName();
                     } else {
@@ -879,6 +885,7 @@ public class WSDescargaCFDI {
                 zip_file = zip_file.substring(0, zip_file.lastIndexOf(".xml")) + ".zip";
 
                 Files.write(Paths.get(zip_file), data_file);
+
                 return zip_file.toString();
             }
 
@@ -968,4 +975,20 @@ public class WSDescargaCFDI {
 
     }
 
+    @Override
+    public String toString() {
+        return "WSDescargaCFDI{" +
+                "RFC_SOLICITANTE='" + RFC_SOLICITANTE + '\'' +
+                ", AutenticaResult='" + AutenticaResult + '\'' +
+                ", IdSolicitud='" + IdSolicitud + '\'' +
+                ", idPaquete='" + idPaquete + '\'' +
+                ", solicitud_mensaje='" + solicitud_mensaje + '\'' +
+                ", solicitud_codigo='" + solicitud_codigo + '\'' +
+                ", ENVIA_SOLICITUD=" + ENVIA_SOLICITUD +
+                ", GUARDA_SOLICITUD=" + GUARDA_SOLICITUD +
+                ", resultado=" + resultado +
+                ", certificado=" + certificado +
+                ", private_key=" + private_key +
+                '}';
+    }
 }

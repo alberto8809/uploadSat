@@ -45,7 +45,7 @@ public class SatController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HttpStatus> upload(@RequestBody String fileName) {
-        UploadFileToS3.upload(fileName);
+        //UploadFileToS3.upload(fileName);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

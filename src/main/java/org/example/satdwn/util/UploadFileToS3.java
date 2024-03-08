@@ -18,6 +18,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.*;
 import java.util.*;
@@ -26,20 +27,24 @@ import java.util.*;
 public class UploadFileToS3 {
     private static String bucketName = "xmlfilesback";
     private static String bucketNameKeys = "e-tribute-client-files";
-    private static String path = "https://xmlfilesback.s3.amazonaws.com/";
+
+    private static String local_path = "/Users/marioalberto/IdeaProjects/upload/";
+    //private static String server_path= "/home/ubuntu/satUploadFile/";
+
     public static Logger LOGGER = LogManager.getLogger(UploadFileToS3.class);
 
 
-    public static void upload(String user_id) {
+    public static void upload(String user_id, String xml) {
         try {
 
-            String filePath = user_id;
+            //String filePath = user_id;
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                     .withRegion(Regions.US_EAST_1)
                     .build();
 
-            File file = new File(filePath);
-            PutObjectRequest request = new PutObjectRequest(bucketName, user_id + "/", file);
+
+            File file = new File(local_path + xml);
+            PutObjectRequest request = new PutObjectRequest(bucketName, user_id + "/", xml);
             s3Client.putObject(request);
 
         } catch (SdkClientException e) {
@@ -129,7 +134,6 @@ public class UploadFileToS3 {
         }
         return localFilePath;
     }
-
 
 
     public static String createFileKeys(String fileName) {
