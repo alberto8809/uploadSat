@@ -44,15 +44,15 @@ public class SatService {
 
         if (repository.getUserByToken(satClass.getToken()) != null) {
 
-            Path destinoCer = Paths.get("/Users/marioalberto/IdeaProjects/upload/user.cer");
-            //Path destinoCer = Paths.get("/home/ubuntu/satUploadFile/user.cer");
+            // Path destinoCer = Paths.get("/Users/marioalberto/IdeaProjects/upload/user.cer");
+            Path destinoCer = Paths.get("/home/ubuntu/satUploadFile/user.cer");
 
 
             URL url = new URL(satClass.getCer_path());
             Files.copy(url.openStream(), destinoCer, StandardCopyOption.REPLACE_EXISTING);
 
-            Path destinoKey = Paths.get("/Users/marioalberto/IdeaProjects/upload/user.key");
-            //Path destinoKey = Paths.get("/home/ubuntu/satUploadFile/user.key");
+            //Path destinoKey = Paths.get("/Users/marioalberto/IdeaProjects/upload/user.key");
+            Path destinoKey = Paths.get("/home/ubuntu/satUploadFile/user.key");
             URL url2 = new URL(satClass.getKey_path());
             Files.copy(url2.openStream(), destinoKey, StandardCopyOption.REPLACE_EXISTING);
 
@@ -76,7 +76,7 @@ public class SatService {
                     for (String idPaquete : idPaquetes) {
                         String xml = solicitud.descargaPaquete(idPaquete);
                         String zip = solicitud.extraer_zip_de_xml(Paths.get(xml));
-                        UploadFileToS3.upload(satClass.getRfc(),xml);
+                        UploadFileToS3.upload(satClass.getRfc(), xml);
                         LOGGER.info("file name: { " + zip + "}");
                         return true;
                     }

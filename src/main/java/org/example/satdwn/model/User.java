@@ -4,6 +4,7 @@ package org.example.satdwn.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.io.Serializable;
 
 @Entity
@@ -100,9 +101,13 @@ public class User implements Serializable {
         this.user_mail = user_mail;
     }
 
-    public String getUser_password() {return user_password;}
+    public String getUser_password() {
+        return user_password;
+    }
 
-    public void setUser_password(String user_password) {this.user_password =  new BCryptPasswordEncoder().encode(user_password);}
+    public void setUser_password(String user_password) {
+        this.user_password = new BCryptPasswordEncoder().encode(user_password);
+    }
 
     public String getToken() {
         return token;

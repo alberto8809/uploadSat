@@ -16,7 +16,7 @@ public class EncryptionUtil {
         return null;
     }
 
-    public static  String decrypt(String encrypted) {
+    public static String decrypt(String encrypted) {
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(encrypted);
             return new String(decodedBytes);
@@ -26,7 +26,7 @@ public class EncryptionUtil {
         return null;
     }
 
-    public static String generateToken(){
+    public static String generateToken() {
         String tokenGenerado = UUID.randomUUID().toString().replace("-", "");
         return tokenGenerado;
     }

@@ -28,8 +28,8 @@ public class UploadFileToS3 {
     private static String bucketName = "xmlfilesback";
     private static String bucketNameKeys = "e-tribute-client-files";
 
-    private static String local_path = "/Users/marioalberto/IdeaProjects/upload/";
-    //private static String server_path= "/home/ubuntu/satUploadFile/";
+    //private static String local_path = "/Users/marioalberto/IdeaProjects/upload/";
+    private static String server_path= "/home/ubuntu/satUploadFile/";
 
     public static Logger LOGGER = LogManager.getLogger(UploadFileToS3.class);
 
@@ -42,8 +42,7 @@ public class UploadFileToS3 {
                     .withRegion(Regions.US_EAST_1)
                     .build();
 
-
-            File file = new File(local_path + xml);
+            File file = new File(server_path + xml);
             PutObjectRequest request = new PutObjectRequest(bucketName, user_id + "/", xml);
             s3Client.putObject(request);
 
@@ -113,13 +112,13 @@ public class UploadFileToS3 {
         String localFilePath = null;
         try {
             //debe ser 8 por el rfc
-            File directorio = new File(fileName.substring(0, 4));
+            File directorio = new File(fileName.substring(0, 8));
             if (!directorio.exists()) {
                 directorio.mkdirs();
             }
 
             S3Client s3 = S3Client.builder().region(Region.US_EAST_1).build();
-            localFilePath = directorio + "/" + fileName.substring(5, fileName.length());
+            localFilePath = directorio + "/" + fileName.substring(8, fileName.length());
             //LOGGER.info("Local path  " + localFilePath);
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)

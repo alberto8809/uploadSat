@@ -88,9 +88,8 @@ public class WSDescargaCFDI {
     private static final String WS_SOAP_ACTION_DESCARGA = "http://DescargaMasivaTerceros.sat.gob.mx/IDescargaMasivaTercerosService/Descargar";
 
 
-
-    private static String DIR_SALIDA = "/Users/marioalberto/IdeaProjects/upload/";
-    //private static String DIR_SALIDA = "/home/ubuntu/satUploadFile/";
+   // private static String DIR_SALIDA = "/Users/marioalberto/IdeaProjects/upload/";
+    private static String DIR_SALIDA = "/home/ubuntu/satUploadFile/";
     private String RFC_SOLICITANTE = "XAXX010101000 ";
 
     public static final MediaType MT_JSON = MediaType.get("text/xml; charset=utf-8");
@@ -656,7 +655,7 @@ public class WSDescargaCFDI {
                         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
                         String validacion_file = "p_" + idPaquete + "_" + format.format(new Date()) + ".xml";
                         Path xml_salida = Paths.get(DIR_SALIDA, validacion_file);
-/**/
+                        /**/
 
                         logger.debug("XML generado en {}", xml_salida.toUri());
                         return xml_salida.toFile().getName();

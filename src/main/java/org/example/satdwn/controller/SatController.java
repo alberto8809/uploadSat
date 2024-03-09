@@ -3,7 +3,6 @@ package org.example.satdwn.controller;
 import org.example.satdwn.model.Response;
 import org.example.satdwn.model.SatClass;
 import org.example.satdwn.service.SatService;
-import org.example.satdwn.util.UploadFileToS3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,16 +38,6 @@ public class SatController {
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
-
-
-    @PostMapping(value = "upload",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HttpStatus> upload(@RequestBody String fileName) {
-        //UploadFileToS3.upload(fileName);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
 
     @GetMapping(value = "getFiles/{fileName}")
     public ResponseEntity<Map<String, List<Response>>> getFile(@PathVariable(name = "fileName") String fileName) {
