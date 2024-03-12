@@ -16,9 +16,6 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
-
-
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.*;
 import java.util.*;
@@ -26,7 +23,6 @@ import java.util.*;
 
 public class UploadFileToS3 {
     private static String bucketName = "xmlfilesback";
-    private static String bucketNameKeys = "e-tribute-client-files";
 
     //private static String local_path = "/Users/marioalberto/IdeaProjects/upload/";
     private static String server_path= "/home/ubuntu/satUploadFile/";
@@ -36,14 +32,12 @@ public class UploadFileToS3 {
 
     public static void upload(String user_id, String xml) {
         try {
-
-            //String filePath = user_id;
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                     .withRegion(Regions.US_EAST_1)
                     .build();
 
             File file = new File(server_path + xml);
-            PutObjectRequest request = new PutObjectRequest(bucketName, user_id + "/", xml);
+            PutObjectRequest request = new PutObjectRequest(bucketName, user_id + "/" + xml, file);
             s3Client.putObject(request);
 
         } catch (SdkClientException e) {
@@ -95,11 +89,11 @@ public class UploadFileToS3 {
                 responses.add(response);
                 localPath = path;
             }
-
+            String[] partes = localPath.split("/");
             facturas.put("Emitidas", responses);
             facturas.put("Recibidas", responses);
 
-            FileUtils.deleteDirectory(new File(localPath.substring(0, 4)));
+            FileUtils.deleteDirectory(new File(partes[0]));
 
 
         } catch (Exception e) {
@@ -111,44 +105,19 @@ public class UploadFileToS3 {
     public static String createFile(String fileName) {
         String localFilePath = null;
         try {
+
+            String[] partes = fileName.split("/");
             //debe ser 8 por el rfc
-            File directorio = new File(fileName.substring(0, 8));
+            File directorio = new File(partes[0]);
             if (!directorio.exists()) {
                 directorio.mkdirs();
             }
 
             S3Client s3 = S3Client.builder().region(Region.US_EAST_1).build();
-            localFilePath = directorio + "/" + fileName.substring(8, fileName.length());
+            localFilePath = directorio + "/" + partes[1];
             //LOGGER.info("Local path  " + localFilePath);
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)
-                    .key(fileName)
-                    .build();
-
-            GetObjectResponse getObjectResponse = s3.getObject(getObjectRequest, Paths.get(localFilePath));
-
-            //LOGGER.info(" --- " + Paths.get(localFilePath));
-        } catch (S3Exception e) {
-            LOGGER.error(e.getMessage());
-        }
-        return localFilePath;
-    }
-
-
-    public static String createFileKeys(String fileName) {
-        String localFilePath = null;
-        try {
-            //debe ser 8 por el rfc
-            File directorio = new File(fileName.substring(0, 4));
-            if (!directorio.exists()) {
-                directorio.mkdirs();
-            }
-
-            S3Client s3 = S3Client.builder().region(Region.US_EAST_1).build();
-            localFilePath = directorio + "/" + fileName;
-            //LOGGER.info("Local path  " + localFilePath);
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(bucketNameKeys)
                     .key(fileName)
                     .build();
 

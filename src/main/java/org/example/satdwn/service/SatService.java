@@ -3,6 +3,7 @@ package org.example.satdwn.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.example.satdwn.model.Response;
 import org.example.satdwn.model.SatClass;
 import org.example.satdwn.model.WSDescargaCFDI;
@@ -20,10 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Service
@@ -39,34 +37,35 @@ public class SatService {
     }
 
 
-    public boolean requestSat(SatClass satClass) throws ParseException, IOException {
-        boolean flag = false;
+    public boolean requestSat(SatClass satClass) throws IOException {
 
         if (repository.getUserByToken(satClass.getToken()) != null) {
 
-            // Path destinoCer = Paths.get("/Users/marioalberto/IdeaProjects/upload/user.cer");
-            Path destinoCer = Paths.get("/home/ubuntu/satUploadFile/user.cer");
+
+            //Path destinoCer = Paths.get("/Users/marioalberto/IdeaProjects/upload/" + satClass.getRfc() + ".cer");
+            Path destinoCer = Paths.get("/home/ubuntu/satUploadFile/" + satClass.getRfc() + ".cer");
 
 
             URL url = new URL(satClass.getCer_path());
             Files.copy(url.openStream(), destinoCer, StandardCopyOption.REPLACE_EXISTING);
 
-            //Path destinoKey = Paths.get("/Users/marioalberto/IdeaProjects/upload/user.key");
-            Path destinoKey = Paths.get("/home/ubuntu/satUploadFile/user.key");
+            //Path destinoKey = Paths.get("/Users/marioalberto/IdeaProjects/upload/" + satClass.getRfc() + ".key");
+            Path destinoKey = Paths.get("/home/ubuntu/satUploadFile/" + satClass.getRfc() + ".key");
             URL url2 = new URL(satClass.getKey_path());
             Files.copy(url2.openStream(), destinoKey, StandardCopyOption.REPLACE_EXISTING);
 
 
-            InputStream cer = new FileInputStream(new File(String.valueOf(destinoCer)));
-            InputStream key = new FileInputStream(new File(String.valueOf(destinoKey)));
+            InputStream cer = new FileInputStream(String.valueOf(destinoCer));
+            InputStream key = new FileInputStream(String.valueOf(destinoKey));
 
 
             WSDescargaCFDI solicitud = new WSDescargaCFDI(satClass.getRfc(), cer, key, satClass.getClave());
             solicitud.autenticacion();
-            //LOGGER.info("ToString ---> { " + solicitud.toString() + " }");
+
             String idSolicitud = solicitud.solicitud(satClass.getInitialDate(), satClass.getFinalDate(), null, satClass.getRfc(),
                     WSDescargaCFDI.TIPO_SOLICITUD_CFDI);
-            LOGGER.info("id solicitud --->  { " + idSolicitud + " }");
+
+
             WSDescargaCFDI.ResultadoVerificaSolicitud resultado = solicitud.verificacion(idSolicitud);
 
             if (resultado != null) {
@@ -75,20 +74,21 @@ public class SatService {
                 if (idPaquetes != null) {
                     for (String idPaquete : idPaquetes) {
                         String xml = solicitud.descargaPaquete(idPaquete);
-                        String zip = solicitud.extraer_zip_de_xml(Paths.get(xml));
                         UploadFileToS3.upload(satClass.getRfc(), xml);
-                        LOGGER.info("file name: { " + zip + "}");
                         return true;
                     }
                 } else {
-                    return flag;
+                    return false;
                 }
             } else {
                 return false;
             }
+            FileUtils.deleteDirectory(new File(String.valueOf(destinoCer)));
+            FileUtils.deleteDirectory(new File(String.valueOf(destinoKey)));
         }
 
-        return flag;
+
+        return false;
     }
 
 }

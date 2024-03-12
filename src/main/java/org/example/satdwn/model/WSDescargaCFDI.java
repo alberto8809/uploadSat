@@ -88,7 +88,7 @@ public class WSDescargaCFDI {
     private static final String WS_SOAP_ACTION_DESCARGA = "http://DescargaMasivaTerceros.sat.gob.mx/IDescargaMasivaTercerosService/Descargar";
 
 
-   // private static String DIR_SALIDA = "/Users/marioalberto/IdeaProjects/upload/";
+    //private static String DIR_SALIDA = "/Users/marioalberto/IdeaProjects/upload/";
     private static String DIR_SALIDA = "/home/ubuntu/satUploadFile/";
     private String RFC_SOLICITANTE = "XAXX010101000 ";
 
@@ -525,7 +525,7 @@ public class WSDescargaCFDI {
                         ResultadoVerificaSolicitud resultadoVerificacion = new ResultadoVerificaSolicitud(
                                 codigo_estado_solicitud, estado_solicitud, no_cfdis, xml_salida.toFile().getName());
 
-                        logger.debug("CodigoEstadoSolicitud {} '{}' EstadoSolicitud {} '{}' no_cfdis {}",
+                        logger.info("CodigoEstadoSolicitud {} '{}' EstadoSolicitud {} '{}' no_cfdis {}",
                                 codigo_estado_solicitud, resultadoVerificacion.getCodigoEstadoSolicitudMensaje(),
                                 estado_solicitud, resultadoVerificacion.getEstadoSolicitudMensaje(), no_cfdis);
 
@@ -972,6 +972,15 @@ public class WSDescargaCFDI {
             }
         }
 
+        @Override
+        public String toString() {
+            return "ResultadoVerificaSolicitud{" +
+                    "CodigoEstadoSolicitud='" + CodigoEstadoSolicitud + '\'' +
+                    ", EstadoSolicitud='" + EstadoSolicitud + '\'' +
+                    ", no_cfdis='" + no_cfdis + '\'' +
+                    ", xml_resultado='" + xml_resultado + '\'' +
+                    '}';
+        }
     }
 
     @Override
