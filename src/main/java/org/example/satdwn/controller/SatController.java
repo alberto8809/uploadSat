@@ -33,10 +33,11 @@ public class SatController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayList<String>> sat(@RequestBody SatClass userSat) throws ParseException, IOException {
         ArrayList<String> list = satService.requestSat(userSat);
-        if (list != null) {
+         if (list != null) {
             return new ResponseEntity<>(list, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(list, HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(list, HttpStatus.FORBIDDEN);
     }
 
     @GetMapping(value = "getFiles/{fileName}")
