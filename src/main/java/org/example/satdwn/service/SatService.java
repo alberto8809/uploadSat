@@ -71,7 +71,8 @@ public class SatService {
                 if (idPaquetes != null) {
                     for (String idPaquete : idPaquetes) {
                         String xml = solicitud.descargaPaquete(idPaquete);
-                        UploadFileToS3.upload(satClass.getRfc(), xml);
+                        String zip = solicitud.extraer_zip_de_xml(Paths.get(xml));
+                        //UploadFileToS3.upload(satClass.getRfc(), xml);
                     }
                     Files.delete(destinoCer);
                     Files.delete(destinoKey);
