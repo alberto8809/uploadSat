@@ -1,8 +1,7 @@
 package org.example.satdwn.service;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import org.example.satdwn.model.Response;
 import org.example.satdwn.model.SatClass;
 import org.example.satdwn.model.WSDescargaCFDI;
