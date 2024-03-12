@@ -34,8 +34,8 @@ public class SatService {
     }
 
 
-    public boolean requestSat(SatClass satClass) throws IOException {
-
+    public ArrayList<String>  requestSat(SatClass satClass) throws IOException {
+        ArrayList<String> idPaquetes = null;
         if (repository.getUserByToken(satClass.getToken()) != null) {
 
 
@@ -76,21 +76,20 @@ public class SatService {
                     }
                     Files.delete(destinoCer);
                     Files.delete(destinoKey);
-                    return true;
+                    return idPaquetes;
                 } else {
                     Files.delete(destinoCer);
                     Files.delete(destinoKey);
-                    return false;
+                    return idPaquetes;
                 }
             } else {
                 Files.delete(destinoCer);
                 Files.delete(destinoKey);
-                return false;
+                return idPaquetes;
             }
         }
 
-
-        return false;
+        return idPaquetes;
     }
 
 }
