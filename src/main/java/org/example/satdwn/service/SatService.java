@@ -34,8 +34,8 @@ public class SatService {
     }
 
 
-    public boolean requestSat(SatClass satClass) throws IOException {
-
+    public ArrayList<String> requestSat(SatClass satClass) throws IOException {
+        ArrayList<String> idPaquetes = null;
         if (repository.getUserByToken(satClass.getToken()) != null) {
 
 
@@ -66,30 +66,32 @@ public class SatService {
             WSDescargaCFDI.ResultadoVerificaSolicitud resultado = solicitud.verificacion(idSolicitud);
 
             if (resultado != null) {
-                ArrayList<String> idPaquetes = solicitud.obtiener_ids_paquetes(Paths.get(resultado.getXml_resultado()));
+                idPaquetes = solicitud.obtiener_ids_paquetes(Paths.get(resultado.getXml_resultado()));
 
                 if (idPaquetes != null) {
                     for (String idPaquete : idPaquetes) {
                         String xml = solicitud.descargaPaquete(idPaquete);
-                        UploadFileToS3.upload(satClass.getRfc(), xml);
+                        String zip = solicitud.extraer_zip_de_xml(Paths.get(xml));
+                        UploadFileToS3.upload(satClass.getRfc(), String.valueOf(Paths.get(xml)));
+
                     }
                     Files.delete(destinoCer);
                     Files.delete(destinoKey);
-                    return true;
+                    return idPaquetes;
                 } else {
                     Files.delete(destinoCer);
                     Files.delete(destinoKey);
-                    return false;
+                    return idPaquetes;
                 }
             } else {
                 Files.delete(destinoCer);
                 Files.delete(destinoKey);
-                return false;
+                return idPaquetes;
             }
         }
 
 
-        return false;
+        return idPaquetes;
     }
 
 }

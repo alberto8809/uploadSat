@@ -51,7 +51,6 @@ import org.apache.commons.net.ntp.TimeInfo;
 import org.apache.commons.ssl.PKCS8Key;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.satdwn.util.UploadFileToS3;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -490,7 +489,7 @@ public class WSDescargaCFDI {
                     Path xml_salida = Paths.get(DIR_SALIDA, validacion_file);
 
                     Files.write(xml_salida, resultado.get("resultado").getBytes());
-                    logger.debug("XML generado en {}", xml_salida.toUri());
+                    logger.info("XML generado en {}", xml_salida.toUri());
 
                     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                     DocumentBuilder db = dbf.newDocumentBuilder();

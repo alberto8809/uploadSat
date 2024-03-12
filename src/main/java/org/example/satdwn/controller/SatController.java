@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +31,12 @@ public class SatController {
     @PostMapping(value = "sat",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HttpStatus> sat(@RequestBody SatClass userSat) throws ParseException, IOException {
-        if (satService.requestSat(userSat)) {
-            return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<ArrayList<String>> sat(@RequestBody SatClass userSat) throws ParseException, IOException {
+        ArrayList<String> list = satService.requestSat(userSat);
+        if (list != null) {
+            return new ResponseEntity<>(list, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(list, HttpStatus.FORBIDDEN);
     }
 
     @GetMapping(value = "getFiles/{fileName}")
