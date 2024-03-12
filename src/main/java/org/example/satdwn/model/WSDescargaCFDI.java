@@ -505,7 +505,7 @@ public class WSDescargaCFDI {
                             "//*[local-name()='VerificaSolicitudDescargaResult']/@Mensaje", document,
                             XPathConstants.STRING);
 
-                    logger.debug("{} {}", code, mensaje);
+                    logger.info("{} {}", code, mensaje);
 
                     this.solicitud_mensaje = code + mensaje;
                     this.solicitud_codigo = code;
